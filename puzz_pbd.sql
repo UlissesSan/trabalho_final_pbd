@@ -1,4 +1,10 @@
-﻿DROP TABLE IF EXISTS funcionario;
+﻿/*
+	autor: Ulisses Santana
+		   Deyvid Yuri
+*/
+
+
+DROP TABLE IF EXISTS funcionario;
 CREATE TABLE funcionarios (
 	funcionario_id  SERIAL primary key not null,
 	nome varchar(50) not null,
