@@ -135,10 +135,29 @@ BEGIN
     RAISE EXCEPTION 'Cargo não pode ser nulo ou vazio!';
   ELSE
     INSERT INTO cargo VALUES (DEFAULT, cargo);
-    RAISE EXCEPTION 'Funcionario cadastrado com sucesso, Obrigado!';
+    RAISE notice 'Funcionario cadastrado com sucesso, Obrigado!';
   END IF;
 END
 $$ LANGUAGE PLPGSQL;
+
+
+CREATE OR REPLACE FUNCTION cadastrarCategoria(categoria VARCHAR(50))
+  RETURNS VOID as $$
+BEGIN
+  IF categoria IS NULL OR categoria LIKE ''
+  THEN
+    RAISE EXCEPTION 'Categoria não pode ser nula ou vazio!';
+  ELSE
+    INSERT INTO categoria VALUES (DEFAULT, categoria);
+    RAISE notice 'Funcionario cadastrado com sucesso, Obrigado!';
+  END IF;
+END
+$$ LANGUAGE PLPGSQL;
+
+select cadastrarCategoria('Luxo');
+select cadastrarCategoria('Apartamento');
+
+select * from categoria;
 
 
 /* TRIGGERS */
