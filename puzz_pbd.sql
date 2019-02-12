@@ -23,8 +23,7 @@ CREATE TABLE cargo (
 DROP TABLE IF EXISTS motel;
 CREATE TABLE motel(
 	motel_id SERIAL primary key not null,
-	nome_motel varchar(50) not null,
-	endereco varchar(100) not null
+	nome_motel varchar(50) not null
 );
 
 
@@ -34,38 +33,34 @@ CREATE TABLE ocupacao(
 	data_entrada date not null,
 	data_saida date,
 	funcionarioId integer not null,
-	cargoId integer not null,
 	motelId integer not null,
+	quarto_id integer not null,
 	
 	foreign key (funcionarioId) references funcionarios (funcionario_id),
 	foreign key (cargoId) references cargo (cargo_id),
-	foreign key (motelId) references motel (motel_id)
+	foreign key (motelId) references motel (motel_id),
+	foreign key (quarto_id) references quarto (quarto_id)
 );
 
 DROP TABLE IF EXISTS estoque;
 CREATE TABLE estoque(
 	estoque_id SERIAL primary key not null,
-	motelId integer not null,
-	produtoId integer not null,
-	quantidade integer not null,
-
-	foreign key motelId references motel (motel_id),
-	foreign key produtoId references produtos (produto_id)
-	
+	motelId integer references motel (motel_id),
+	produtoId integer references produtos (produto_id),
+	quantidade integer not null
 );
 
 DROP TABLE IF EXISTS produtos;
 CREATE TABLE produtos(
 	produto_id SERIAL primary key not null,
 	nome_produto varchar(50) not null,
-	tipo_quantidade varchar(3) not null,
-	descricao varchar(50)
+	tipo_quantidade varchar(3) not null
 );
 
 DROP TABLE IF EXISTS quarto_motel;
 CREATE TABLE quarto_motel(
-	quarto_motel_id SERIAL primary key not null
-
+	motel_id integer references motel(motel_id),
+	quarto_id integer references quarto(quarto_id)
 );
 
 DROP TABLE IF EXISTS quarto;
