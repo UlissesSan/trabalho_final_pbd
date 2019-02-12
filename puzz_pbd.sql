@@ -70,8 +70,9 @@ CREATE TABLE quarto_motel(
 
 DROP TABLE IF EXISTS quarto;
 CREATE TABLE quarto(
-	quarto_id SERIAL primary key not null
-	
+	quarto_id SERIAL primary key not null,
+	numero integer not null,
+	categoria_id integer references categoria(categoria_id)
 );
 
 DROP TABLE IF EXISTS categoria;
@@ -171,6 +172,29 @@ BEGIN
   ELSE
     INSERT INTO produtos VALUES (DEFAULT, nome_p, tipo_quantidade_p, descricao_p);
     RAISE notice 'Produto cadstrado com sucesso, Obrigado!';
+    END IF;
+END
+$$ LANGUAGE PLPGSQL
+
+CREATE OR REPLACE FUNCTION cadastrarQuarto(numero integer, _categoria VARCHAR(50))
+  RETURNS VOID as $$
+declare
+	var_categoria_id integer;
+begin
+	select categoria_id from categoria where nome_categoria ilike _categoria into var_categoria_id;
+	
+  IF numero IS NULL
+  THEN
+    RAISE EXCEPTION 'O nunero do quarto não pode ser nulo ou vazio!';
+  ELSEIF _categoria IS NULL OR _categoria LIKE ''
+  THEN
+    RAISE EXCEPTION 'A categoria não pode ser nula ou vazio!';
+  elseif var_categoria_id is null
+  then
+  	raise exception 'Categoria nao existe';
+  ELSE
+    INSERT INTO quarto VALUES (default,numero, var_categoria_id);
+    RAISE NOTICE 'Quarto cadastrado com sucesso, Obrigado!';
   END IF;
 END
 $$ LANGUAGE PLPGSQL;
@@ -182,7 +206,14 @@ $$ LANGUAGE PLPGSQL;
 
 
 /* TESTS */
+select cadastrarQuarto(100, 'luxo');
+select cadastrarQuarto(100, 'master luxo');
+select * from quarto;
 
+select cadastrarCategoria('Luxo');
+select cadastrarCategoria('Apartamento');
+select cadastrarCategoria('');
+select * from categoria;
 select cadastrarCategoria('Luxo');
 select cadastrarCategoria('Apartamento');
 
