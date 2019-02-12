@@ -52,18 +52,20 @@ CREATE TABLE estoque(
 DROP TABLE IF EXISTS categoria;
 CREATE TABLE categoria (
   categoria_id SERIAL primary key not null,
-  nome_categoria varchar(50)
+  nome_categoria varchar(50),
+  valor_categoria float
 );
 
 DROP TABLE IF EXISTS quarto;
 CREATE TABLE quarto(
   quarto_id SERIAL primary key not null,
   numero integer not null,
-  categoria_id integer references categoria(categoria_id)
+  categoria_id integer references categoria(categoria_id),
 );
 
 DROP TABLE IF EXISTS quarto_motel;
 CREATE TABLE quarto_motel(
+  ocupado boolean default false,
   motel_id integer references motel(motel_id),
   quarto_id integer references quarto(quarto_id),
 
@@ -78,7 +80,8 @@ CREATE TABLE cliente (
 DROP TABLE IF EXISTS pedido;
 CREATE TABLE pedido(
   pedido_id SERIAL primary key not null,
-  total float
+  total float,
+  foreign key ocupacao_id integer references ocupacao(ocupacao_id)
 );
 
 DROP TABLE IF EXISTS item_pedido;
@@ -102,16 +105,23 @@ CREATE TABLE ocupacao(
   motel_id integer not null,
   quarto_id integer not null,
   cliente_id integer not null,
-  pedido_id integer not null,
-
 
   foreign key (funcionario_id, cargo_id) references funcionario_cargo(funcionario_id, cargo_id),
   foreign key (motel_id, quarto_id) references quarto_motel(motel_id, quarto_id),
-  foreign key (cliente_id) references cliente (cliente_id),
-  foreign key (pedido_id) references pedido (pedido_id) 
+  foreign key (cliente_id) references cliente (cliente_id)
 );
 
 /* FUNCOES */
+
+/* 
+ * Validações
+ *  Funcionario {
+ * 		- nome nao pode ser vazio nem nulo, nem conter mais de 50 caracteres, nem ser numero
+ * 		- cpf nao pode ser vazio nem nulo, deve conter 15 caracteres 
+ * 		- telefone, nao pode ser vazio nem nulo, deve conter entre 10 e 11 caracteres
+ * 		- endereco nao pode ser vazio nem nulo, deve conter no maximo 100 caracteres
+ * 
+ * */
 CREATE OR REPLACE FUNCTION cadastrarFuncionario(nome_f VARCHAR(50), cpf_f VARCHAR(15),
   telefone_f VARCHAR(50), endereco_f VARCHAR(100))
   RETURNS VOID AS
@@ -126,18 +136,26 @@ BEGIN
   ELSEIF telefone_f IS NULL OR telefone_f LIKE ''
   THEN
     RAISE EXCEPTION 'O telefone não é nulo ou vazio!';
+  ELSEIF length(telefone_f) > 11 or length (telefone_f) < 10
+  THEN
+    RAISE EXCEPTION 'Telefone nao pode ter mais de 11 digitos e menos que 10!';
   ELSEIF endereco_f IS NULL OR endereco_f LIKE ''
   THEN
     RAISE EXCEPTION 'O endereço não pode ser nulo ou vazio!';
   ELSE
-    INSERT INTO funcionarios (nome, cpf, telefone, endereco) VALUES (nome_f, cpf_f, telefone_f, endereco_f);
+    INSERT INTO funcionarios VALUES (default, nome_f, cpf_f, telefone_f, endereco_f);
     RAISE notice 'Funcionario cadastrado com sucesso, Obrigado!';
   END IF;
 END
 $$
   LANGUAGE PLPGSQL;
 
- 
+/* 
+ * - cargo nao pode ser vazio nem nulo
+ * - deve ser unico
+ * - cargo nao pode ser numerico
+ * 
+ * */ 
 CREATE OR REPLACE FUNCTION cadastrarCargo(cargo VARCHAR(50))
   RETURNS VOID as $$
 BEGIN
@@ -151,7 +169,10 @@ BEGIN
 END
 $$ LANGUAGE PLPGSQL;
 
-
+/* 
+ * - categoria nao pode ser vazio nem nulo
+ * - no maximo 50 char e nao pode ser numerico
+ * */
 CREATE OR REPLACE FUNCTION cadastrarCategoria(categoria VARCHAR(50))
   RETURNS VOID as $$
 BEGIN
@@ -165,6 +186,11 @@ BEGIN
 END
 $$ LANGUAGE PLPGSQL;
 
+/* 
+ * - nome -> nao pode ser vazio nem nulo, max 50, nao pode numerico, unico
+ * - qtd -> nao pode ser negativa e deve ser numerico
+ * - descricao -> max 50 char
+ * */
 CREATE OR REPLACE FUNCTION cadastrarProduto(nome_p VARCHAR(50), tipo_quantidade_p varchar(3), descricao_p varchar(50))
   RETURNS VOID as $$
 BEGIN
@@ -184,6 +210,10 @@ BEGIN
 END
 $$ LANGUAGE PLPGSQL
 
+/* 
+ * numero -  nao pode vazio nem nulo, nem negativo, so numero
+ * categoria - deve existir na tabela categoria, nao pode ser vazio ou nulo, max 50
+ * */
 CREATE OR REPLACE FUNCTION cadastrarQuarto(numero integer, _categoria VARCHAR(50))
   RETURNS VOID as $$
 declare
@@ -208,10 +238,49 @@ END
 $$ LANGUAGE PLPGSQL;
 
 
+
+/* funcao criar_quarto_motel */
+
+
+/* funcao ocupar_quarto
+ * 		- Quarto, Categoria, funcionario responsavel, motel (CHECAR SE TODOS EXISTEM)
+ * 		- Antes do insert criar o Cliente
+ * 		- Verficar se o quarto ta livre
+ * 		- Muda o estado do quarto para true
+ * 
+ * 
+ *  */
+
+/* funcao libera_quarto
+ * 		- Quarto, motel
+ * 		- Verificar se esta ocupado o quarto_motel 
+ * 		- Muda o status do quarto
+ * 
+ *  */
+
+/* funcao - interditar quarto */
+
+/* funcao baixa_estoque 
+ * 	- vai ser chamada ao usar a funcao adicionar_item_pedido
+ * 
+ * */
+
+/* funcao adicionar_item_pedido - (nome_produto, quantidade_produto, pedido_id)
+ * 		- criar ou atualizar o pedido 
+ * 		- verifica se tem no estoque
+ *  */
+
+
 /* TRIGGERS */
 
-/* VIEWS */
+/*  1 -  Antes de inserir  quarto verificar se ja existe quarto com aquele exato numero e categoria, nao pode ser inserido */
+/*  2 -  Apos inserir e update (inserir o mesmo item aumentando a quantidade) na tabela item_pedido, 
+ * 		atualizar valor total na tabela pedido  */
 
+/* VIEWS */
+/* 1 - mostrar o balanço geral de uma data a outra */
+
+/* 2 - mostrar o balanço da conta do cliente*/
 
 /* TESTS */
 select cadastrarQuarto(100, 'luxo');
@@ -234,4 +303,4 @@ insert into funcionarios (nome, cpf, telefone, endereco) values ('Maycon','60000
 
 insert into ocupacao (data_entrada, funcionarioId, cargoId) values ( '2018-10-20', 2, 1);
 
-select cadastrarFuncionario('Ulisses', '60045162360', '123456789012', 'longe pra caralho');
+select cadastrarFuncionario('Ulissdses', '60045262360', '12345678912', 'longe pra caralho');
