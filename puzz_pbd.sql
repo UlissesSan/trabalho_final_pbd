@@ -67,9 +67,11 @@ CREATE TABLE quarto_motel(
 	quarto_motel_id SERIAL primary key not null,
 );
 
-DROP TABLE IF EXISTS quarto;a
+DROP TABLE IF EXISTS quarto;
 CREATE TABLE quarto(
-	quarto_id SERIAL primary key not null
+	quarto_id SERIAL primary key not null,
+	numero integer not null,
+	categoria_id integer references categoria(categoria_id)
 );
 
 DROP TABLE IF EXISTS categoria;
@@ -156,8 +158,11 @@ $$ LANGUAGE PLPGSQL;
 
 select cadastrarCategoria('Luxo');
 select cadastrarCategoria('Apartamento');
-
+select cadastrarCategoria('');
 select * from categoria;
+
+
+
 
 
 /* TRIGGERS */
