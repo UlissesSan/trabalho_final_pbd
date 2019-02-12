@@ -4,6 +4,7 @@
 */
 
 
+/* TABELAS */
 DROP TABLE IF EXISTS funcionario;
 CREATE TABLE funcionarios (
 	funcionario_id  SERIAL primary key not null,
@@ -13,9 +14,6 @@ CREATE TABLE funcionarios (
 	endereco varchar(100) not null
 )
 
-/*Decidir entre usar  ENUM ou uma tabela
-CREATE TYPE cargo AS ENUM ('recepcionista', 'cozinheiro', 'camareira', 'gerente', 'seguranca');
-*/
 DROP TABLE IF EXISTS cargo;
 CREATE TABLE cargo (
 	cargo_id SERIAL primary key not null,
@@ -68,7 +66,7 @@ CREATE TABLE quarto_motel(
 	quarto_motel_id SERIAL primary key not null,
 )
 
-DROP TABLE IF EXISTS quarto;
+DROP TABLE IF EXISTS quarto;a
 CREATE TABLE quarto(
 	quarto_id SERIAL primary key not null,
 )
@@ -99,6 +97,19 @@ DROP TABLE IF EXISTS item_pedido;
 CREATE TABLE item_pedido(
 	item_id SERIAL primary key not null,
 )
+
+
+/* FUNCOES */
+
+
+
+/* TRIGGERS */
+
+
+
+/* VIEWS */
+
+
 /* Insert test */
 insert into funcionarios (nome, telefone, endereco) values ('Maycon', '8612345678', 'Ladeira do Uruguai');
 insert into funcionarios (nome, telefone, endereco) values ('Thais', '8687654321', 'Lourival Parente');
