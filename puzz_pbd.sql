@@ -4,7 +4,7 @@
 */
 
 /* TABELAS */
-DROP TABLE IF EXISTS funcionario;
+DROP TABLE IF EXISTS funcionarios;
 CREATE TABLE funcionarios (
 	funcionario_id  SERIAL primary key not null,
 	nome varchar(50) not null,
@@ -119,8 +119,8 @@ BEGIN
   THEN
     RAISE EXCEPTION 'O endereço não pode ser nulo ou vazio!';
   ELSE
-    INSERT INTO funcionarios(nome, cpf, telefone, endereco) VALUES (nome_f, cpf_f, telefone_f, endereco_f);
-    RAISE EXCEPTION 'Funcionario cadastrado com sucesso, Obrigado!';
+    INSERT INTO funcionarios (nome, cpf, telefone, endereco) VALUES (nome_f, cpf_f, telefone_f, endereco_f);
+    RAISE NOTICE 'Funcionario cadastrado com sucesso, Obrigado!';
   END IF;
 END
 $$
@@ -128,26 +128,16 @@ $$
 
 
 /* TRIGGERS */
-t
-
 
 /* VIEWS */
 
 
 /* TESTS */
-insert into funcionarios (nome, cpf, telefone, endereco) values ('Maycon','60000000000', '8612345678', 'Ladeira do Uruguai');
-insert into funcionarios (nome, telefone, endereco) values ('Thais', '8687654321', 'Lourival Parente');
-insert into funcionarios (nome, telefone, endereco) values ('zezin', '8687654322', 'puta merda Parente');
+select * from funcionarios;
 
-insert into cargo (nome_cargo) values ('recepcionista');
-insert into cargo (nome_cargo) values ('camarera');
-insert into cargo (nome_cargo) values ('gerente');
-insert into cargo (nome_cargo) values ('cozinheira');
+INSERT INTO funcionarios (nome, cpf, telefone, endereco) VALUES ('PEGA ARROMBADO', '55555555555', '11111111111', 'puta que pariu');
+insert into funcionarios (nome, cpf, telefone, endereco) values ('Maycon','60000000000', '8612345678', 'Ladeira do Uruguai');
 
 insert into ocupacao (data_entrada, funcionarioId, cargoId) values ( '2018-10-20', 2, 1);
 
 select cadastrarFuncionario('Ulisses', '60045162360', '123456789012', 'longe pra caralho');
-
-DO $$ BEGIN
-    PERFORM cadastrarFuncionario('Ulisses', '60045162360', '123456789012', 'longe pra caralho');
-END $$;
