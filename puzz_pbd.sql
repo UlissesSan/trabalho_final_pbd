@@ -44,15 +44,15 @@ CREATE TABLE ocupacao(
 	funcionario_id integer not null,
   cargo_id integer not null,
   motel_id integer not null,
-	quarto_id integer not null,
+  quarto_id integer not null,
   cliente_id integer not null,
   pedido_id integer not null,
 
 
   foreign key (funcionario_id, cargo_id) references funcionario_cargo(funcionario_id, cargo_id),
   foreign key (motel_id, quarto_id) references quarto_motel(motel_id, quarto_id),
-  foreign key cliente_id references cliente (cliente_id),
-  foreign key pedido_id references pedido (pedido_id)	
+  foreign key (cliente_id) references cliente (cliente_id),
+  foreign key (pedido_id) references pedido (pedido_id)	
 );
 
 DROP TABLE IF EXISTS estoque;
@@ -88,23 +88,18 @@ CREATE TABLE quarto(
 DROP TABLE IF EXISTS categoria;
 CREATE TABLE categoria (
 	categoria_id SERIAL primary key not null,
-	nome_categoria varchar(50),
+	nome_categoria varchar(50)
 );
 
 DROP TABLE IF EXISTS cliente;
 CREATE TABLE cliente (
-	cliente_id SERIAL primary key not null,
-	ocupacao_id not null,
-
-	foreign key ocupacao_id references ocupacao (ocupacao_id)
+	cliente_id SERIAL primary key not null
 );
 
 DROP TABLE IF EXISTS pedido;
 CREATE TABLE pedido(
 	pedido_id SERIAL primary key not null,
-	ocupacao_id not null,
-
-	foreign key ocupacao_id references ocupacao (ocupacao_id)
+	total float
 );
 
 DROP TABLE IF EXISTS item_pedido;
