@@ -1,22 +1,22 @@
 ﻿/*
-	autores:   Ulisses Santana
-		   Deyvid Yuri
+  autores:   Ulisses Santana
+       Deyvid Yuri
 */
 
 /* TABELAS */
 DROP TABLE IF EXISTS funcionarios;
 CREATE TABLE funcionarios (
-	funcionario_id  SERIAL primary key not null,
-	nome varchar(50) not null,
-	cpf varchar(15) unique not null,
-	telefone varchar (11) not null,
-	endereco varchar(100) not null
+  funcionario_id  SERIAL primary key not null,
+  nome varchar(50) not null,
+  cpf varchar(15) unique not null,
+  telefone varchar (11) not null,
+  endereco varchar(100) not null
 );
 
 DROP TABLE IF EXISTS cargo;
 CREATE TABLE cargo (
-	cargo_id SERIAL primary key not null,
-	nome_cargo varchar(20) not null
+  cargo_id SERIAL primary key not null,
+  nome_cargo varchar(20) not null
 );
 
 DROP TABLE IF EXISTS funcionario_cargo;
@@ -30,76 +30,55 @@ CREATE TABLE funcionario_cargo (
 
 DROP TABLE IF EXISTS motel;
 CREATE TABLE motel(
-	motel_id SERIAL primary key not null,
-	nome_motel varchar(50) not null
-);
-
-
-DROP TABLE IF EXISTS ocupacao;
-CREATE TABLE ocupacao(
-	ocupacao_id SERIAL primary key not null,
-	data_entrada date not null,
-	data_saida date,
-
-	funcionario_id integer not null,
-  cargo_id integer not null,
-  motel_id integer not null,
-  quarto_id integer not null,
-  cliente_id integer not null,
-  pedido_id integer not null,
-
-
-  foreign key (funcionario_id, cargo_id) references funcionario_cargo(funcionario_id, cargo_id),
-  foreign key (motel_id, quarto_id) references quarto_motel(motel_id, quarto_id),
-  foreign key (cliente_id) references cliente (cliente_id),
-  foreign key (pedido_id) references pedido (pedido_id)	
-);
-
-DROP TABLE IF EXISTS estoque;
-CREATE TABLE estoque(
-	estoque_id SERIAL primary key not null,
-	motel_id integer references motel (motel_id),
-	produto_id integer references produtos (produto_id),
-	quantidade integer not null
+  motel_id SERIAL primary key not null,
+  nome_motel varchar(50) not null
 );
 
 DROP TABLE IF EXISTS produtos;
 CREATE TABLE produtos(
-	produto_id SERIAL primary key not null,
-	nome_produto varchar(50) not null,
-	tipo_quantidade varchar(3) not null
+  produto_id SERIAL primary key not null,
+  nome_produto varchar(50) not null,
+  tipo_quantidade varchar(3) not null
 );
 
-DROP TABLE IF EXISTS quarto_motel;
-CREATE TABLE quarto_motel(
-	motel_id integer references motel(motel_id),
-	quarto_id integer references quarto(quarto_id),
-
-  primary key (motel_id, quarto_id)
-);
-
-DROP TABLE IF EXISTS quarto;
-CREATE TABLE quarto(
-	quarto_id SERIAL primary key not null,
-	numero integer not null,
-	categoria_id integer references categoria(categoria_id)
+DROP TABLE IF EXISTS estoque;
+CREATE TABLE estoque(
+  estoque_id SERIAL primary key not null,
+  motel_id integer references motel (motel_id),
+  produto_id integer references produtos (produto_id),
+  quantidade integer not null
 );
 
 DROP TABLE IF EXISTS categoria;
 CREATE TABLE categoria (
-	categoria_id SERIAL primary key not null,
-	nome_categoria varchar(50)
+  categoria_id SERIAL primary key not null,
+  nome_categoria varchar(50)
+);
+
+DROP TABLE IF EXISTS quarto;
+CREATE TABLE quarto(
+  quarto_id SERIAL primary key not null,
+  numero integer not null,
+  categoria_id integer references categoria(categoria_id)
+);
+
+DROP TABLE IF EXISTS quarto_motel;
+CREATE TABLE quarto_motel(
+  motel_id integer references motel(motel_id),
+  quarto_id integer references quarto(quarto_id),
+
+  primary key (motel_id, quarto_id)
 );
 
 DROP TABLE IF EXISTS cliente;
 CREATE TABLE cliente (
-	cliente_id SERIAL primary key not null
+  cliente_id SERIAL primary key not null
 );
 
 DROP TABLE IF EXISTS pedido;
 CREATE TABLE pedido(
-	pedido_id SERIAL primary key not null,
-	total float
+  pedido_id SERIAL primary key not null,
+  total float
 );
 
 DROP TABLE IF EXISTS item_pedido;
@@ -112,10 +91,29 @@ CREATE TABLE item_pedido(
   primary key(pedido_id, produto_id)
 );
 
+DROP TABLE IF EXISTS ocupacao;
+CREATE TABLE ocupacao(
+  ocupacao_id SERIAL primary key not null,
+  data_entrada date not null,
+  data_saida date,
+
+  funcionario_id integer not null,
+  cargo_id integer not null,
+  motel_id integer not null,
+  quarto_id integer not null,
+  cliente_id integer not null,
+  pedido_id integer not null,
+
+
+  foreign key (funcionario_id, cargo_id) references funcionario_cargo(funcionario_id, cargo_id),
+  foreign key (motel_id, quarto_id) references quarto_motel(motel_id, quarto_id),
+  foreign key (cliente_id) references cliente (cliente_id),
+  foreign key (pedido_id) references pedido (pedido_id) 
+);
 
 /* FUNCOES */
 CREATE OR REPLACE FUNCTION cadastrarFuncionario(nome_f VARCHAR(50), cpf_f VARCHAR(15),
-	telefone_f VARCHAR(50), endereco_f VARCHAR(100))
+  telefone_f VARCHAR(50), endereco_f VARCHAR(100))
   RETURNS VOID AS
 $$
 BEGIN
@@ -172,7 +170,7 @@ CREATE OR REPLACE FUNCTION cadastrarProduto(nome_p VARCHAR(50), tipo_quantidade_
 BEGIN
   IF nome_p IS NULL OR nome_p LIKE ''
   THEN
-  	RAISE EXCEPTION 'Nome não pode ser nulo ou vazio!';
+    RAISE EXCEPTION 'Nome não pode ser nulo ou vazio!';
   ELSEIF tipo_quantidade_p IS NULL OR tipo_quantidade_p LIKE ''
   THEN
     RAISE EXCEPTION 'Tipo quantidade não pode ser nulo ou vazio!';
@@ -189,10 +187,10 @@ $$ LANGUAGE PLPGSQL
 CREATE OR REPLACE FUNCTION cadastrarQuarto(numero integer, _categoria VARCHAR(50))
   RETURNS VOID as $$
 declare
-	var_categoria_id integer;
+  var_categoria_id integer;
 begin
-	select categoria_id from categoria where nome_categoria ilike _categoria into var_categoria_id;
-	
+  select categoria_id from categoria where nome_categoria ilike _categoria into var_categoria_id;
+  
   IF numero IS NULL
   THEN
     RAISE EXCEPTION 'O nunero do quarto não pode ser nulo ou vazio!';
@@ -201,7 +199,7 @@ begin
     RAISE EXCEPTION 'A categoria não pode ser nula ou vazio!';
   elseif var_categoria_id is null
   then
-  	raise exception 'Categoria nao existe';
+    raise exception 'Categoria nao existe';
   ELSE
     INSERT INTO quarto VALUES (default,numero, var_categoria_id);
     RAISE NOTICE 'Quarto cadastrado com sucesso, Obrigado!';
