@@ -19,6 +19,14 @@ CREATE TABLE cargo (
 	nome_cargo varchar(20) not null
 );
 
+DROP TABLE IF EXISTS funcionario_cargo;
+CREATE TABLE funcionario_cargo (
+  funcionario_id integer references funcionarios(funcionario_id),
+  cargo_id integer references cargo(cargo_id),
+
+  primary key (funcionario_id, cargo_id)
+);
+
 
 DROP TABLE IF EXISTS motel;
 CREATE TABLE motel(
@@ -32,21 +40,26 @@ CREATE TABLE ocupacao(
 	ocupacao_id SERIAL primary key not null,
 	data_entrada date not null,
 	data_saida date,
-	funcionarioId integer not null,
-	motelId integer not null,
+
+	funcionario_id integer not null,
+  cargo_id integer not null,
+  motel_id integer not null,
 	quarto_id integer not null,
-	
-	foreign key (funcionarioId) references funcionarios (funcionario_id),
-	foreign key (cargoId) references cargo (cargo_id),
-	foreign key (motelId) references motel (motel_id),
-	foreign key (quarto_id) references quarto (quarto_id)
+  cliente_id integer not null,
+  pedido_id integer not null,
+
+
+  foreign key (funcionario_id, cargo_id) references funcionario_cargo(funcionario_id, cargo_id),
+  foreign key (motel_id, quarto_id) references quarto_motel(motel_id, quarto_id),
+  foreign key cliente_id references cliente (cliente_id),
+  foreign key pedido_id references pedido (pedido_id)	
 );
 
 DROP TABLE IF EXISTS estoque;
 CREATE TABLE estoque(
 	estoque_id SERIAL primary key not null,
-	motelId integer references motel (motel_id),
-	produtoId integer references produtos (produto_id),
+	motel_id integer references motel (motel_id),
+	produto_id integer references produtos (produto_id),
 	quantidade integer not null
 );
 
@@ -60,7 +73,9 @@ CREATE TABLE produtos(
 DROP TABLE IF EXISTS quarto_motel;
 CREATE TABLE quarto_motel(
 	motel_id integer references motel(motel_id),
-	quarto_id integer references quarto(quarto_id)
+	quarto_id integer references quarto(quarto_id),
+
+  primary key (motel_id, quarto_id)
 );
 
 DROP TABLE IF EXISTS quarto;
@@ -79,22 +94,27 @@ CREATE TABLE categoria (
 DROP TABLE IF EXISTS cliente;
 CREATE TABLE cliente (
 	cliente_id SERIAL primary key not null,
-	ocupacaoId not null,
+	ocupacao_id not null,
 
-	foreign key ocupacaoId references ocupacao (ocupacao_id)
+	foreign key ocupacao_id references ocupacao (ocupacao_id)
 );
 
 DROP TABLE IF EXISTS pedido;
 CREATE TABLE pedido(
 	pedido_id SERIAL primary key not null,
-	ocupacaoId not null,
+	ocupacao_id not null,
 
-	foreign key ocupacaoId references ocupacao (ocupacao_id)
+	foreign key ocupacao_id references ocupacao (ocupacao_id)
 );
 
 DROP TABLE IF EXISTS item_pedido;
 CREATE TABLE item_pedido(
-	item_id SERIAL primary key not null
+  pedido_id integer references pedido(pedido_id),
+  produto_id integer references produtos(produto_id),
+  estoque_id integer references estoque(estoque_id),
+  quantidade integer not null,
+
+  primary key(pedido_id, produto_id)
 );
 
 
