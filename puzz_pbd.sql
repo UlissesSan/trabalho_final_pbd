@@ -10,7 +10,7 @@ CREATE TABLE funcionarios (
 	funcionario_id  SERIAL primary key not null,
 	nome varchar(50) not null,
 	cpf varchar(15) unique not null,
-	telefone varchar (20) not null,
+	telefone varchar (11) not null,
 	endereco varchar(100) not null
 )
 
@@ -100,7 +100,30 @@ CREATE TABLE item_pedido(
 
 
 /* FUNCOES */
-
+CREATE OR REPLACE FUNCTION cadastrarFuncionario(nome_f VARCHAR(50), cpf_f VARCHAR(15),
+	telefone_f VARCHAR(50), endereco_f VARCHAR(100))
+  RETURNS VOID AS
+$$
+BEGIN
+  IF nome_f IS NULL OR nome_f LIKE ''
+  THEN
+    RAISE EXCEPTION 'O nome não pode ser nulo ou vazio!';
+  ELSEIF cpf_f IS NULL OR cpf_f LIKE ''
+  THEN
+    RAISE EXCEPTION 'O CPF não é nulo ou vazio!';
+  ELSEIF telefone_f IS NULL OR telefone_f LIKE ''
+  THEN
+    RAISE EXCEPTION 'O telefone não é nulo ou vazio!';
+  ELSEIF endereco_f IS NULL OR endereco_f LIKE ''
+  THEN
+    RAISE EXCEPTION 'O endereço não pode ser nulo ou vazio!';
+  ELSE
+    INSERT INTO funcionarios VALUES (DEFAULT, nome_f, cpf_f, telefone_f, endereco_f);
+    RAISE EXCEPTION 'Funcionario cadastrado com sucesso, Obrigado!';
+  END IF;
+END
+$$
+  LANGUAGE PLPGSQL;
 
 
 /* TRIGGERS */
@@ -110,7 +133,7 @@ CREATE TABLE item_pedido(
 /* VIEWS */
 
 
-/* Insert test */
+/* TESTS */
 insert into funcionarios (nome, telefone, endereco) values ('Maycon', '8612345678', 'Ladeira do Uruguai');
 insert into funcionarios (nome, telefone, endereco) values ('Thais', '8687654321', 'Lourival Parente');
 
@@ -121,6 +144,8 @@ insert into cargo (nome_cargo) values ('cozinheira');
 
 insert into ocupacao (data_entrada, funcionarioId, cargoId) values ( '2018-10-20', 2, 1);
 
+select cadastrarFuncionario('Ulisses', '60045162360', '123456789012', 'longe pra caralho');
 
-/* select test*/
-select all from ocupacao;
+DO $$ BEGIN
+    PERFORM cadastrarFuncionario('Ulisses', '60045162360', '123456789012', 'longe pra caralho');
+END $$;
