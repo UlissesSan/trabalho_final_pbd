@@ -1,8 +1,7 @@
 ﻿/*
-	autor: Ulisses Santana
+	autores:   Ulisses Santana
 		   Deyvid Yuri
 */
-
 
 /* TABELAS */
 DROP TABLE IF EXISTS funcionario;
@@ -12,13 +11,22 @@ CREATE TABLE funcionarios (
 	cpf varchar(15) unique not null,
 	telefone varchar (11) not null,
 	endereco varchar(100) not null
-)
+);
 
 DROP TABLE IF EXISTS cargo;
 CREATE TABLE cargo (
 	cargo_id SERIAL primary key not null,
 	nome_cargo varchar(20) not null
-)
+);
+
+
+DROP TABLE IF EXISTS motel;
+CREATE TABLE motel(
+	motel_id SERIAL primary key not null,
+	nome_motel varchar(50) not null,
+	endereco varchar(100) not null
+);
+
 
 DROP TABLE IF EXISTS ocupacao;
 CREATE TABLE ocupacao(
@@ -32,14 +40,7 @@ CREATE TABLE ocupacao(
 	foreign key (funcionarioId) references funcionarios (funcionario_id),
 	foreign key (cargoId) references cargo (cargo_id),
 	foreign key (motelId) references motel (motel_id)
-)
-
-DROP TABLE IF EXISTS motel;
-CREATE TABLE motel(
-	motel_id SERIAL primary key not null,
-	nome_motel varchar(50) not null,
-	endereco varchar(100) not null,
-)
+);
 
 DROP TABLE IF EXISTS estoque;
 CREATE TABLE estoque(
@@ -51,7 +52,7 @@ CREATE TABLE estoque(
 	foreign key motelId references motel (motel_id),
 	foreign key produtoId references produtos (produto_id)
 	
-)
+);
 
 DROP TABLE IF EXISTS produtos;
 CREATE TABLE produtos(
@@ -59,23 +60,23 @@ CREATE TABLE produtos(
 	nome_produto varchar(50) not null,
 	tipo_quantidade varchar(50) not null,
 	descricao varchar(50)
-)
+);
 
 DROP TABLE IF EXISTS quarto_motel;
 CREATE TABLE quarto_motel(
 	quarto_motel_id SERIAL primary key not null,
-)
+);
 
 DROP TABLE IF EXISTS quarto;a
 CREATE TABLE quarto(
-	quarto_id SERIAL primary key not null,
-)
+	quarto_id SERIAL primary key not null
+);
 
 DROP TABLE IF EXISTS categoria;
 CREATE TABLE categoria (
 	categoria_id SERIAL primary key not null,
 	nome_categoria varchar(50),
-)
+);
 
 DROP TABLE IF EXISTS cliente;
 CREATE TABLE cliente (
@@ -83,7 +84,7 @@ CREATE TABLE cliente (
 	ocupacaoId not null,
 
 	foreign key ocupacaoId references ocupacao (ocupacao_id)
-)
+);
 
 DROP TABLE IF EXISTS pedido;
 CREATE TABLE pedido(
@@ -91,12 +92,12 @@ CREATE TABLE pedido(
 	ocupacaoId not null,
 
 	foreign key ocupacaoId references ocupacao (ocupacao_id)
-)
+);
 
 DROP TABLE IF EXISTS item_pedido;
 CREATE TABLE item_pedido(
-	item_id SERIAL primary key not null,
-)
+	item_id SERIAL primary key not null
+);
 
 
 /* FUNCOES */
@@ -118,7 +119,7 @@ BEGIN
   THEN
     RAISE EXCEPTION 'O endereço não pode ser nulo ou vazio!';
   ELSE
-    INSERT INTO funcionarios VALUES (DEFAULT, nome_f, cpf_f, telefone_f, endereco_f);
+    INSERT INTO funcionarios(nome, cpf, telefone, endereco) VALUES (nome_f, cpf_f, telefone_f, endereco_f);
     RAISE EXCEPTION 'Funcionario cadastrado com sucesso, Obrigado!';
   END IF;
 END
@@ -141,15 +142,16 @@ $$ LANGUAGE PLPGSQL;
 
 
 /* TRIGGERS */
-
+t
 
 
 /* VIEWS */
 
 
 /* TESTS */
-insert into funcionarios (nome, telefone, endereco) values ('Maycon', '8612345678', 'Ladeira do Uruguai');
+insert into funcionarios (nome, cpf, telefone, endereco) values ('Maycon','60000000000', '8612345678', 'Ladeira do Uruguai');
 insert into funcionarios (nome, telefone, endereco) values ('Thais', '8687654321', 'Lourival Parente');
+insert into funcionarios (nome, telefone, endereco) values ('zezin', '8687654322', 'puta merda Parente');
 
 insert into cargo (nome_cargo) values ('recepcionista');
 insert into cargo (nome_cargo) values ('camarera');
