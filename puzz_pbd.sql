@@ -125,6 +125,20 @@ END
 $$
   LANGUAGE PLPGSQL;
 
+ 
+CREATE OR REPLACE FUNCTION cadastrarCargo(cargo VARCHAR(50))
+  RETURNS VOID as $$
+BEGIN
+  IF cargo IS NULL OR cargo LIKE ''
+  THEN
+    RAISE EXCEPTION 'Cargo não pode ser nulo ou vazio!';
+  ELSE
+    INSERT INTO cargo VALUES (DEFAULT, cargo);
+    RAISE EXCEPTION 'Funcionario cadastrado com sucesso, Obrigado!';
+  END IF;
+END
+$$ LANGUAGE PLPGSQL;
+
 
 /* TRIGGERS */
 
