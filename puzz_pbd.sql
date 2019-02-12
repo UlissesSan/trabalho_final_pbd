@@ -64,12 +64,14 @@ CREATE TABLE produtos(
 
 DROP TABLE IF EXISTS quarto_motel;
 CREATE TABLE quarto_motel(
-	quarto_motel_id SERIAL primary key not null,
+	quarto_motel_id SERIAL primary key not null
+
 );
 
-DROP TABLE IF EXISTS quarto;a
+DROP TABLE IF EXISTS quarto;
 CREATE TABLE quarto(
 	quarto_id SERIAL primary key not null
+	
 );
 
 DROP TABLE IF EXISTS categoria;
@@ -154,11 +156,18 @@ BEGIN
 END
 $$ LANGUAGE PLPGSQL;
 
-select cadastrarCategoria('Luxo');
-select cadastrarCategoria('Apartamento');
-
-select * from categoria;
-
+CREATE OR REPLACE FUNCTION cadastrarQuarto(categoria VARCHAR(50))
+  RETURNS VOID as $$
+BEGIN
+  IF categoria IS NULL OR categoria LIKE ''
+  THEN
+    RAISE EXCEPTION 'Categoria não pode ser nula ou vazio!';
+  ELSE
+    INSERT INTO categoria VALUES (DEFAULT, categoria);
+    RAISE notice 'Funcionario cadastrado com sucesso, Obrigado!';
+  END IF;
+END
+$$ LANGUAGE PLPGSQL;
 
 /* TRIGGERS */
 
@@ -166,6 +175,13 @@ select * from categoria;
 
 
 /* TESTS */
+
+
+select cadastrarCategoria('Luxo');
+select cadastrarCategoria('Apartamento');
+
+select * from categoria;
+
 select * from funcionarios;
 
 INSERT INTO funcionarios (nome, cpf, telefone, endereco) VALUES ('PEGA ARROMBADO', '55555555555', '11111111111', 'puta que pariu');
