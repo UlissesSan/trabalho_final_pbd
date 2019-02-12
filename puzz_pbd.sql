@@ -58,7 +58,7 @@ DROP TABLE IF EXISTS produtos;
 CREATE TABLE produtos(
 	produto_id SERIAL primary key not null,
 	nome_produto varchar(50) not null,
-	tipo_quantidade varchar(50) not null,
+	tipo_quantidade varchar(3) not null,
 	descricao varchar(50)
 );
 
@@ -122,7 +122,7 @@ BEGIN
     RAISE EXCEPTION 'O endereço não pode ser nulo ou vazio!';
   ELSE
     INSERT INTO funcionarios (nome, cpf, telefone, endereco) VALUES (nome_f, cpf_f, telefone_f, endereco_f);
-    RAISE NOTICE 'Funcionario cadastrado com sucesso, Obrigado!';
+    RAISE notice 'Funcionario cadastrado com sucesso, Obrigado!';
   END IF;
 END
 $$
@@ -151,23 +151,30 @@ BEGIN
     RAISE EXCEPTION 'Categoria não pode ser nula ou vazio!';
   ELSE
     INSERT INTO categoria VALUES (DEFAULT, categoria);
-    RAISE notice 'Funcionario cadastrado com sucesso, Obrigado!';
+    RAISE notice 'Categoria cadastrada com sucesso, Obrigado!';
   END IF;
 END
 $$ LANGUAGE PLPGSQL;
 
-CREATE OR REPLACE FUNCTION cadastrarQuarto(categoria VARCHAR(50))
+CREATE OR REPLACE FUNCTION cadastrarProduto(nome_p VARCHAR(50), tipo_quantidade_p varchar(3), descricao_p varchar(50))
   RETURNS VOID as $$
 BEGIN
-  IF categoria IS NULL OR categoria LIKE ''
+  IF nome_p IS NULL OR nome_p LIKE ''
   THEN
-    RAISE EXCEPTION 'Categoria não pode ser nula ou vazio!';
+  	RAISE EXCEPTION 'Nome não pode ser nulo ou vazio!';
+  ELSEIF tipo_quantidade_p IS NULL OR tipo_quantidade_p LIKE ''
+  THEN
+    RAISE EXCEPTION 'Tipo quantidade não pode ser nulo ou vazio!';
+  ELSEIF descricao_p IS NULL OR descricao_p LIKE ''
+  THEN
+    RAISE EXCEPTION 'Descricao não pode ser nula ou vazia!';
   ELSE
-    INSERT INTO categoria VALUES (DEFAULT, categoria);
-    RAISE notice 'Funcionario cadastrado com sucesso, Obrigado!';
+    INSERT INTO produtos VALUES (DEFAULT, nome_p, tipo_quantidade_p, descricao_p);
+    RAISE notice 'Produto cadstrado com sucesso, Obrigado!';
   END IF;
 END
 $$ LANGUAGE PLPGSQL;
+
 
 /* TRIGGERS */
 
@@ -175,7 +182,6 @@ $$ LANGUAGE PLPGSQL;
 
 
 /* TESTS */
-
 
 select cadastrarCategoria('Luxo');
 select cadastrarCategoria('Apartamento');
