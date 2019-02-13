@@ -116,13 +116,12 @@ CREATE TABLE ocupacao(
 /* 
  * Validações
  *  Funcionario {
- * 		- nome nao pode ser vazio nem nulo, nem conter mais de 50 caracteres, nem ser numero
- * 		- cpf nao pode ser vazio nem nulo, deve conter 15 caracteres 
- * 		- telefone, nao pode ser vazio nem nulo, deve conter entre 10 e 11 caracteres
- * 		- endereco nao pode ser vazio nem nulo, deve conter no maximo 100 caracteres
- * 
+ * 		- nome nao pode ser vazio nem nulo, nem conter mais de 50 caracteres, nem ser numero - ok
+ * 		- cpf nao pode ser vazio nem nulo, deve conter 11 caracteres - ok
+ * 		- telefone, nao pode ser vazio nem nulo, deve conter entre 10 e 11 caracteres - ok
+ * 		- endereco nao pode ser vazio nem nulo, deve conter no maximo 100 caracteres - ok
  * */
-CREATE OR REPLACE FUNCTION cadastrarFuncionario(nome_f VARCHAR(50), cpf_f VARCHAR(15),
+CREATE OR REPLACE FUNCTION cadastrarFuncionario(nome_f VARCHAR(50), cpf_f VARCHAR(11),
   telefone_f VARCHAR(50), endereco_f VARCHAR(100))
   RETURNS VOID AS
 $$
@@ -130,9 +129,15 @@ BEGIN
   IF nome_f IS NULL OR nome_f LIKE ''
   THEN
     RAISE EXCEPTION 'O nome não pode ser nulo ou vazio!';
+  ELSEIF length(nome_f) > 50
+  THEN
+    RAISE EXCEPTION 'Nome não pode ter mais de 50 caracteres!';
   ELSEIF cpf_f IS NULL OR cpf_f LIKE ''
   THEN
     RAISE EXCEPTION 'O CPF não é nulo ou vazio!';
+  ELSEIF length(cpf_f) <> 11
+  THEN
+    RAISE EXCEPTION 'Nome não pode ter mais de 50 caracteres!';
   ELSEIF telefone_f IS NULL OR telefone_f LIKE ''
   THEN
     RAISE EXCEPTION 'O telefone não é nulo ou vazio!';
@@ -151,31 +156,39 @@ $$
   LANGUAGE PLPGSQL;
 
 /* 
- * - cargo nao pode ser vazio nem nulo
- * - deve ser unico
+ * - cargo nao pode ser vazio nem nulo - ok
+ * - deve ser unico - ok
  * - cargo nao pode ser numerico
- * 
  * */ 
-CREATE OR REPLACE FUNCTION cadastrarCargo(cargo VARCHAR(50))
+ 
+CREATE OR REPLACE FUNCTION cadastrarCargo(_cargo VARCHAR(50))
   RETURNS VOID as $$
-BEGIN
-  IF cargo IS NULL OR cargo LIKE ''
+begin
+  select all from cargo where cargo.nome_cargo ilike _cargo into var_cargo;
+  IF _cargo = var_cargo
+  THEN
+    RAISE EXCEPTION 'Cargo já existente!';			
+  IF _cargo IS NULL OR _cargo LIKE ''
   THEN
     RAISE EXCEPTION 'Cargo não pode ser nulo ou vazio!';
   ELSE
-    INSERT INTO cargo VALUES (DEFAULT, cargo);
+    INSERT INTO cargo VALUES (DEFAULT, _cargo);
     RAISE notice 'Funcionario cadastrado com sucesso, Obrigado!';
   END IF;
 END
 $$ LANGUAGE PLPGSQL;
 
 /* 
- * - categoria nao pode ser vazio nem nulo
- * - no maximo 50 char e nao pode ser numerico
+ * - categoria nao pode ser vazio nem nulo - ok
+ * - no maximo 50 char e nao pode ser numerico -
  * */
+
 CREATE OR REPLACE FUNCTION cadastrarCategoria(categoria VARCHAR(50))
   RETURNS VOID as $$
-BEGIN
+begin
+  ELSEIF length(categoria) > 50
+  THEN
+    RAISE EXCEPTION 'Nome da categoria não pode ter mais de 50 caracteres!';
   IF categoria IS NULL OR categoria LIKE ''
   THEN
     RAISE EXCEPTION 'Categoria não pode ser nula ou vazio!';
@@ -186,7 +199,7 @@ BEGIN
 END
 $$ LANGUAGE PLPGSQL;
 
-/* 
+/* https://stackoverflow.com/questions/16195986/isnumeric-with-postgresql
  * - nome -> nao pode ser vazio nem nulo, max 50, nao pode numerico, unico
  * - qtd -> nao pode ser negativa e deve ser numerico
  * - descricao -> max 50 char
