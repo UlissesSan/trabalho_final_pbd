@@ -115,18 +115,19 @@ $$ LANGUAGE PLPGSQL
 CREATE OR REPLACE FUNCTION cadastrarQuarto(numero integer, _categoria VARCHAR(50)) RETURNS VOID as $$
 declare
   var_categoria_id integer;
+	quartoID integer;
 begin
   var_categoria_id := pegaIdPorNome('categoria', _categoria);
-  
-  IF numero IS NULL
-  THEN
+  quartoID := pegaIdPorNome('quarto', _categoria, numero);
+ 
+  IF numero IS null THEN
     RAISE EXCEPTION 'O nunero do quarto não pode ser nulo ou vazio!';
-  ELSEIF _categoria IS NULL OR _categoria LIKE ''
-  THEN
+  ELSEIF _categoria IS NULL OR _categoria LIKE '' THEN
     RAISE EXCEPTION 'A categoria não pode ser nula ou vazio!';
-  elseif var_categoria_id is null
-  then
+  elseif var_categoria_id is null then
     raise exception 'Categoria nao existe';
+  elseif quartoID is not null then
+  	raise exception 'Já existe quarto com esse numero e categoria';
   ELSE
     INSERT INTO quarto VALUES (default,numero, var_categoria_id);
     RAISE NOTICE 'Quarto cadastrado com sucesso, Obrigado!';
@@ -166,6 +167,9 @@ declare
 	categoriaID integer;
 	motelID integer;
 begin
+	categoriaID := pegaIdPorNome('categoria', nomeCategoria);
+	motelID := pegaIdPorNome('motel', nomeMotel);
+
 	
 end
 $$ language PLPGSQL;
@@ -226,6 +230,9 @@ CREATE TRIGGER TGR_checarNumeroQuartoECategoria
 EXECUTE PROCEDURE checarNumeroQuartoECategoria();
 /*  2 -  Apos inserir e update (inserir o mesmo item aumentando a quantidade) na tabela item_pedido, 
  * 		atualizar valor total na tabela pedido  */
+
+
+
 
 /* FUNCOES AUXILIARES */
 create or replace function pegaIdPorNome(tabela varchar(50), nome_pesquisado varchar(50), valor_pesquisado integer default 0) return integer as $$
