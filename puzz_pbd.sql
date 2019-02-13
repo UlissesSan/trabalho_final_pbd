@@ -163,10 +163,13 @@ $$
  
 CREATE OR REPLACE FUNCTION cadastrarCargo(_cargo VARCHAR(50))
   RETURNS VOID as $$
+declare
+	var_cargo varchar(50);
 begin
-  select all from cargo where cargo.nome_cargo ilike _cargo into var_cargo;
-  IF _cargo = var_cargo
-  THEN
+  select nome from cargo where nome_cargo ilike _cargo into var_cargo;
+ 
+  if _cargo = var_cargo
+  then
     RAISE EXCEPTION 'Cargo já existente!';			
   IF _cargo IS NULL OR _cargo LIKE ''
   THEN
@@ -270,8 +273,22 @@ $$ LANGUAGE PLPGSQL;
  * 		- Muda o status do quarto
  * 
  *  */
-
-/* funcao - interditar quarto */
+CREATE OR REPLACE FUNCTION liberar_quarto(motel integer, quarto integer))
+  RETURNS VOID as $$
+declare
+status_quarto boolean
+begin
+  select ocupado from quarto_motel where quarto_id = quarto and motel_id = motel into status_quarto;
+ 
+  IF status_quarto = false
+  THEN
+    RAISE EXCEPTION 'O quarto já esta liberado!';
+  ELSE
+    update quarto_motel set ocupado = false where quarto_id = quarto and motel_id = motel;
+    RAISE notice 'Quarto liberado com sucesso, Obrigado!';
+  END IF;
+END
+$$ LANGUAGE PLPGSQL;
 
 /* funcao baixa_estoque 
  * 	- vai ser chamada ao usar a funcao adicionar_item_pedido
