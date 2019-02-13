@@ -13,7 +13,7 @@ CREATE OR REPLACE FUNCTION cadastrarFuncionario(nome_f VARCHAR(50), cpf_f VARCHA
 declare
 	funcionarioID integer;
 begin
-	select funcionario_id from funcionarios where nome ilike nome_f into funcionarioID;
+	functionID := pegaIdPorNome('funcionarios', nome_f);
 
   IF nome_f IS NULL OR nome_f LIKE ''
   THEN
@@ -46,7 +46,7 @@ CREATE OR REPLACE FUNCTION cadastrarCargo(cargoNome VARCHAR(50)) RETURNS VOID as
 declare 
 	cargoID integer;
 begin
-	select cargo_id from cargo where nome_cargo ilike cargoNome into cargoID;
+	cargoID := pegaIdPorNome('cargo', cargoNome);
 
   IF cargo IS NULL OR cargo LIKE '' THEN
     RAISE EXCEPTION 'Cargo não pode ser nulo ou vazio!';
@@ -67,7 +67,7 @@ CREATE OR REPLACE FUNCTION cadastrarCategoria(categoriaNome VARCHAR(50), valor f
 declare
 	categoriaID integer;
 begin
-	select categoria_id from categoria where nome_categoria ilike categoriaNome into categoriaID;
+	categoriaID := pegaIdPorNome('categoria', categoriaNome);
 
   IF categoria IS NULL OR categoria LIKE '' THEN
     RAISE EXCEPTION 'Categoria não pode ser nula ou vazio!';
@@ -91,7 +91,7 @@ CREATE OR REPLACE FUNCTION cadastrarProduto(nome_p VARCHAR(50), tipo_quantidade_
 declare
 	produtoID integer;
 begin
-	select produto_id from produtos where nome_produto ilike nome_p into produtoID;
+	produtoID := pegaIdPorNome('produtos', nome_p);
 
   IF nome_p IS NULL OR nome_p LIKE '' THEN
     RAISE EXCEPTION 'Nome não pode ser nulo ou vazio!';
@@ -116,7 +116,7 @@ CREATE OR REPLACE FUNCTION cadastrarQuarto(numero integer, _categoria VARCHAR(50
 declare
   var_categoria_id integer;
 begin
-  select categoria_id from categoria where nome_categoria ilike _categoria into var_categoria_id;
+  var_categoria_id := pegaIdPorNome('categoria', _categoria);
   
   IF numero IS NULL
   THEN
@@ -142,7 +142,7 @@ create or replace function cadastrarMotel(nome varchar(50)) returns void as $$
 declare
 	motelID integer;
 begin
-	select motel_id from motel where nome_motel ilike nome into motelID;
+	motelID := pegaIdPorNome('motel', nome);
 
 	if motelID is null then
 		insert into motel values (default, nome);
@@ -250,6 +250,7 @@ begin
 			else
 				raise exception 'Quarto nao existe';
 			end if;
-	return null;
+		else
+			raise exception 'Tabela nao existe';
 	end case;
 end;
