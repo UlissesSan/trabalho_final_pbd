@@ -97,16 +97,15 @@ CREATE TABLE item_pedido(
 DROP TABLE IF EXISTS ocupacao;
 CREATE TABLE ocupacao(
   ocupacao_id SERIAL primary key not null,
-  data_entrada date not null,
-  data_saida date,
+  entrada timestamp not null,
+  saida timestamp,
 
   funcionario_id integer not null,
-  cargo_id integer not null,
   motel_id integer not null,
   quarto_id integer not null,
   cliente_id integer not null,
 
-  foreign key (funcionario_id, cargo_id) references funcionario_cargo(funcionario_id, cargo_id),
+  foreign key (funcionario_id) references funcionarios(funcionario_id),
   foreign key (motel_id, quarto_id) references quarto_motel(motel_id, quarto_id),
   foreign key (cliente_id) references cliente (cliente_id)
 );

@@ -196,6 +196,46 @@ $$ language PLPGSQL;
  * 		- Verficar se o quarto ta livre
  * 		- Muda o estado do quarto para true
  *  */
+create or replace function ocuparQuarto(numeroQuarto integer, nomeCategoria varchar(50), nomeFuncionario varchar(50), nomeMotel varchar(50))
+returns void as $$
+declare
+	quartoID integer;
+	categoriaID integer;
+	funcionarioID integer;
+	motelID integer;
+	quartoExiste boolean;
+	quartoLivre boolean;
+	clienteID integer;
+begin
+	categoriaID := pegaIdPorNome('categoria', nomeCategoria);
+	motelID:= pegaIdPorNome('motel', nomeMotel);
+	funcionarioID := pegaIdPorNome('functionarios', nomeFuncionario);
+	quartoID := pegaIdPorNome('quarto', nomeCategoria, numeroQuarto);
+
+	if funcionarioID is null then
+		raise exception 'Funcionario nao existe';
+	elseif motelID is null then
+		raise exception 'Motel nao existe';
+	end if;
+
+	select case when count(*) = 1 then true else false end from quarto_motel where motel_id = motelID and quarto_id = quartoID into quartoExiste;
+	select ocupado from quarto_motel where quarto_id = quartoID and motel_id = motelID into quartoLivre;
+
+	if quartoExiste then
+		if quartoLivre then
+			clienteID := insert into cliente values (default) returning cliente_id;
+			insert into ocupacao (ocupacao_id, entrada, funcionario_id, motel_id, quarto_id, cliente_id)
+						  values (default, now(), funcionarioID, motelID, quartoID, clienteID);
+			update quarto_motel set ocupado = true where motel_id = motelID and quarto_id = quartoID;
+			raise notice 'Quarto ocupado com sucesso';
+		else
+			raise exception 'Quarto ocupado';
+		end if;
+	else
+		raise exception 'Quarto nao exite';
+	end if;
+end
+$$ language PLPGSQL;
 
 /* funcao libera_quarto
  * 		- Quarto, motel
