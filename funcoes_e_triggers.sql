@@ -248,8 +248,35 @@ $$ language PLPGSQL;
 
 /* funcao baixa_estoque 
  * 	- vai ser chamada ao usar a funcao adicionar_item_pedido
- * 
  * */
+create or replace FUNCTION baixaEstoque(nomeProduto varchar(50), quantidade integer, nomeMotel varchar(50)) returns void as $$
+declare
+	produtoID integer;
+	motelID integer;
+	estoqueID integer;
+	quantidadeNoEstoque integer;
+begin
+	produtoID := pegaIdPorNome('produtos', nomeProduto);
+	motelID := pegaIdPorNome('motel', nomeMotel);
+
+	if produtoID is null then
+		raise exception 'Produto nao existe';
+	elseif motelID is null then
+		raise exception 'Motel nao existe';
+	else
+		-- checar se produto existe no estoque do motel na quantidade necessaria
+		select estoque_id, quantidade from estoque where produto_id = produtoID and motel_id = motelID into estoqueID, quantidadeNoEstoque;
+		if estoqueID is not null then
+			if quantidadeNoEstoque >= quantidade then
+				update estoque set quantidade = quantidadeNoEstoque - quantidade where produto_id = produtoID and motel_id = motelID;
+				raise notice 'Estoque atualizado.';
+			else
+				raise exception 'Produto em quantidade insuficiente. Quantidade em estoque: %', quantidadeNoEstoque;
+		else
+			raise exception 'Produto nao existe no estoque deste motel';
+	end if;
+end;
+$$ language PLPGSQL;
 
 /* funcao adicionar_item_pedido - (nome_produto, quantidade_produto, pedido_id)
  * 		- criar ou atualizar o pedido 
