@@ -111,7 +111,6 @@ CREATE TABLE ocupacao(
 );
 
 
-
 /* VIEWS */
 /* 1 - mostrar o balanço geral de uma data a outra */
 
