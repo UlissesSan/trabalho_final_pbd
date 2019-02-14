@@ -40,7 +40,6 @@ $$
  * - cargo nao pode ser vazio nem nulo
  * - deve ser unico
  * - cargo nao pode ser numerico
- * 
  * */ 
 CREATE OR REPLACE FUNCTION cadastrarCargo(cargoNome VARCHAR(50)) RETURNS VOID as $$
 declare 
@@ -61,7 +60,7 @@ $$ LANGUAGE PLPGSQL;
 
 /* 
  * - categoria nao pode ser vazio nem nulo
- * - no maximo 50 char e nao pode ser numerico
+ * - no maximo 50 char
  * */
 CREATE OR REPLACE FUNCTION cadastrarCategoria(categoriaNome VARCHAR(50), valor float) RETURNS VOID as $$
 declare
@@ -83,7 +82,7 @@ END
 $$ LANGUAGE PLPGSQL;
 
 /* 
- * - nome -> nao pode ser vazio nem nulo, max 50, nao pode numerico, unico
+ * - nome -> nao pode ser vazio nem nulo, max 50, unico
  * - qtd -> nao pode ser negativa e deve ser numerico
  * - descricao -> max 50 char
  * */
@@ -237,12 +236,26 @@ begin
 end
 $$ language PLPGSQL;
 
-/* funcao libera_quarto
+/* funcao liberar_quarto
  * 		- Quarto, motel
  * 		- Verificar se esta ocupado o quarto_motel 
- * 		- Muda o status do quarto
- * 
+ * 		- Muda o status do quarto 
  *  */
+create or replace function liberar_quarto(motelID integer, quartoID integer) returns void as $$
+declare
+	quarto_ocupado boolean default false;
+begin
+	select ocupado from quarto_motel where quarto_id = quartoID and motel_id = motelID into quarto_ocupado;
+
+	if quarto_ocupado = true then
+		raise exception 'Quarto já esta livre!';
+	else
+		update quarto_motel set ocupado = true where motel_id = motelID and quarto_id = quartoID;
+		raise notice 'Quarto liberado com sucesso!'
+	end if;
+end
+$$ language PLPGSQL;
+
 
 /* funcao - interditar quarto */
 
