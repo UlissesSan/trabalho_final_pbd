@@ -7,7 +7,6 @@
  * 		- cpf nao pode ser vazio nem nulo, deve conter 15 caracteres 
  * 		- telefone, nao pode ser vazio nem nulo, deve conter entre 10 e 11 caracteres
  * 		- endereco nao pode ser vazio nem nulo, deve conter no maximo 100 caracteres
- * 
  * */
 CREATE OR REPLACE FUNCTION cadastrarFuncionario(nome_f VARCHAR(50), cpf_f VARCHAR(15), telefone_f VARCHAR(50), endereco_f VARCHAR(100)) RETURNS VOID as $$
 declare
@@ -256,9 +255,6 @@ begin
 end
 $$ language PLPGSQL;
 
-
-/* funcao - interditar quarto */
-
 /* funcao baixa_estoque 
  * 	- vai ser chamada ao usar a funcao adicionar_item_pedido
  * */
@@ -354,10 +350,10 @@ CREATE TRIGGER TGR_checarNumeroQuartoECategoria
   ON quarto
   FOR EACH ROW
 EXECUTE PROCEDURE checarNumeroQuartoECategoria();
+
+
 /*  2 -  Apos inserir e update (inserir o mesmo item aumentando a quantidade) na tabela item_pedido, 
  * 		atualizar valor total na tabela pedido  */
-
-
 
 
 /* FUNCOES AUXILIARES */
