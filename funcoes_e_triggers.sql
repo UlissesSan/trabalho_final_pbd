@@ -166,11 +166,26 @@ create or replace function cadastrarQuartoMotel(numeroQuarto integer, nomeCatego
 declare
 	categoriaID integer;
 	motelID integer;
+	quartoID integer;
 begin
 	categoriaID := pegaIdPorNome('categoria', nomeCategoria);
 	motelID := pegaIdPorNome('motel', nomeMotel);
+	quartoID := pegaIdPorNome('quarto', nomeCategoria, numeroQuarto);
 
-	
+	if nomeCategoria is null or nomeCategoria like '' then
+		raise exception 'Categoria nao pode ser vazia';
+	elseif nomeMotel is null or nomeMotel like '' then
+		raise exception 'Motel nao pode ser vazio';
+	elseif categoriaID is null then
+		raise exception 'A categoria informada nao existe';
+	elseif motelID is null then
+		raise exception 'O motel informado nao existe';
+	elseif quartoID is null then
+		raise exception 'O numero do quarto e a categoria nao existem';
+	else
+		insert into quarto_motel values (quartoID, motelID);
+		raise notice 'Quarto cadastrado no motel';
+	end if;
 end
 $$ language PLPGSQL;
 
@@ -180,8 +195,6 @@ $$ language PLPGSQL;
  * 		- Antes do insert criar o Cliente
  * 		- Verficar se o quarto ta livre
  * 		- Muda o estado do quarto para true
- * 
- * 
  *  */
 
 /* funcao libera_quarto
