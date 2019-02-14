@@ -249,7 +249,7 @@ $$ language PLPGSQL;
 /* funcao baixa_estoque 
  * 	- vai ser chamada ao usar a funcao adicionar_item_pedido
  * */
-create or replace FUNCTION baixaEstoque(nomeProduto varchar(50), quantidade integer, nomeMotel varchar(50)) returns void as $$
+create or replace FUNCTION baixaEstoque(nomeProduto varchar(50), quantidade integer, nomeMotel varchar(50)) returns boolean as $$
 declare
 	produtoID integer;
 	motelID integer;
@@ -270,11 +270,43 @@ begin
 			if quantidadeNoEstoque >= quantidade then
 				update estoque set quantidade = quantidadeNoEstoque - quantidade where produto_id = produtoID and motel_id = motelID;
 				raise notice 'Estoque atualizado.';
+				return true;
 			else
 				raise exception 'Produto em quantidade insuficiente. Quantidade em estoque: %', quantidadeNoEstoque;
 		else
 			raise exception 'Produto nao existe no estoque deste motel';
 	end if;
+	return false;
+end;
+$$ language PLPGSQL;
+
+
+/*
+	Fazer pedido
+	- quarto
+	- produto
+	- quantidade produto
+	- motel
+*/
+create or replace function fazerPedido(numeroQuarto integer, nomeCategoria varchar(50), nomeProduto varchar(50), quantidadeProduto integer, nomeFuncionario varchar(50), nomeMotel varchar(50)) returns void as $$
+declare
+	quartoID integer;
+	categoriaID integer;
+	produtoID integer;
+	motelID integer;
+	ocupacaoID integer;
+	clienteID integer;
+	funcionarioID integer;
+begin
+	motelID := pegaIdPorNome('motel', nomeMotel);
+	produtoID := pegaIdPorNome('produtos', nomeProduto);
+	categoriaID := pegaIdPorNome('categoria', nomeCategoria);
+	quartoID := pegaIdPorNome('quarto', categoriaID, numeroQuarto);
+	funcionarioID := pegaIdPorNome('funcionarios', nomeFuncionario);
+
+	select ocupacao_id from ocupacao where motel_id = motelID and quarto_id = quartoID and funcionario_id = funcionarioID into ocupacaoID;
+
+	
 end;
 $$ language PLPGSQL;
 
@@ -282,6 +314,7 @@ $$ language PLPGSQL;
  * 		- criar ou atualizar o pedido 
  * 		- verifica se tem no estoque
  *  */
+
 
 
 /* TRIGGERS */
