@@ -323,7 +323,31 @@ $$ language PLPGSQL;
  * 		- criar ou atualizar o pedido 
  * 		- verifica se tem no estoque
  *  */
+create or replace function adicionarItemPedido(nomeProduto varchar(50), quantidadeProduto integer, pedidoID integer) returns void as $$
+declare
+	produtoID integer;
+	motelID integer;
+	motelNome varchar(50);
+begin
+	produtoID := pegaIdPorNome('produtos', nomeProduto);
 
+	select m.motel_id, m.nome_motel
+	from motel m 
+	inner join ocupacao o on m.motel_id = o.motel_id
+	inner join pedido p on p.ocupacao_id = p.ocupacao_id
+	where p.pedido_id = pedidoID into motelID, motelNome;
+
+	if (select count(*) from item_pedido where pedido_id = pedidoID and produto_id = produto_id) = 0 then
+		if (baixaEstoque(nomeProduto, quantidadeProduto, nomeMotel)) then
+			insert into item_pedido values (pedidoID, produtoID, quantidadeProduto);
+		end if;
+	else
+		if (baixaEstoque(nomeProduto, quantidadeProduto, nomeMotel)) then
+			update item_pedido set quantidade = quantidade + quantidadeProduto where pedido_id = pedidoID and produto_id = produtoID;
+		end if;
+	end if;
+end;
+$$ language PLPGSQL;
 
 
 /* TRIGGERS */

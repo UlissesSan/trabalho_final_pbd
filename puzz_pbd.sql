@@ -81,7 +81,7 @@ DROP TABLE IF EXISTS pedido;
 CREATE TABLE pedido(
   pedido_id SERIAL primary key not null,
   total float,
-  foreign key ocupacao_id integer references ocupacao(ocupacao_id)
+  foreign key (ocupacao_id) integer references ocupacao(ocupacao_id)
 );
 
 DROP TABLE IF EXISTS item_pedido;
