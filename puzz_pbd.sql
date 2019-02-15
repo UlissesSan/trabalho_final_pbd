@@ -4,7 +4,7 @@
 */
 
 /* TABELAS */
-DROP TABLE IF EXISTS funcionarios;
+DROP table IF EXISTS funcionarios;
 CREATE TABLE funcionarios (
   funcionario_id  SERIAL primary key not null,
   nome varchar(50) not null,
@@ -110,3 +110,9 @@ CREATE TABLE item_pedido(
 
   primary key(pedido_id, produto_id)
 );
+
+select cadastrarFuncionario('ulisses','11111111111','22222222222','endereco la de casa');
+select cadastrarFuncionario('jao','22222222222','11111111111','endereco la de casa');
+select cadastrarFuncionario('zezin','33333333333','33333333333','endereco la de casa');
+
+select cadastrarCargo('nome');

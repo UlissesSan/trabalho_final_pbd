@@ -379,29 +379,57 @@ EXECUTE PROCEDURE checarNumeroQuartoECategoria();
 
 
 /*  2 -  Apos inserir e update (inserir o mesmo item aumentando a quantidade) na tabela item_pedido, 
- * 		atualizar valor total na tabela pedido  */
-
+ * 		atualizar valor total na tabela pedido  
+CREATE OR REPLACE FUNCTION checarNumeroQuartoECategoria() RETURNS TRIGGER as $$
+declare
+	quartoID integer;
+	categoriaID varchar(50);
+begin
+	select categoria_id from categoria where nome_categoria ilike new.nome_categoria into categoriaID;
+  	select quarto_id from quarto where numero = new.numero and categoria_id = categoriaID into quartoID;
+  
+  	if quarto_id is null then
+  		return new;
+  	else
+    	RAISE exception 'Já existe quarto para essa categoria';
+   	end if;
+END;
+$$ LANGUAGE PLPGSQL;
+ 
+CREATE TRIGGER TGR_checarNumeroQuartoECategoria
+  before INSERT
+  ON quarto
+  FOR EACH ROW
+EXECUTE PROCEDURE checarNumeroQuartoECategoria();
+*/
 
 /* FUNCOES AUXILIARES */
 create or replace function pegaIdPorNome(tabela varchar(50), nome_pesquisado varchar(50), valor_pesquisado integer default 0) returns integer as $$
 declare
 	categoriaID integer;
+	retorno integer;
 begin
 	case
 		when tabela = 'funcionarios' then
-			return select funcionario_id from funcionarios where nome ilike nome_pesquisado;
+			select funcionario_id into retorno from funcionarios where nome ilike nome_pesquisado;
+			return retorno;
 		when tabela = 'cargo' then
-			return select cargo_id from cargo where nome_nome ilike nome_pesquisado;
+			select cargo_id into retorno from cargo where nome_nome ilike nome_pesquisado;
+			return retorno;
 		when tabela = 'categoria' then
-			return select categoria_id from categoria where nome_categoria ilike nome_pesquisado;
+			select categoria_id into retorno from categoria where nome_categoria ilike nome_pesquisado;
+			return retorno;
 		when tabela = 'motel' then
-			return select motel_id from motel where nome_motel ilike nome_pesquisado;
+			select motel_id into retorno from motel where nome_motel ilike nome_pesquisado;
+			return retorno;
 		when tabela = 'produtos' then
-			return select produto_id from produtos where nome_produto ilike nome_pesquisado;
+			select produto_id into retorno from produtos where nome_produto ilike nome_pesquisado;
+			return retorno;
 		when tabela = 'quarto' then
 			categoriaID := pegaIdPorNome('categoria', nome_pesquisado);
 			if categoriaID is not null then
-				return select quarto_id from quarto where numero = valor_pesquisado and categoria_id = categoriaID;
+				select quarto_id into retorno from quarto where numero = valor_pesquisado and categoria_id = categoriaID;
+				return retorno;
 			else
 				raise exception 'Quarto nao existe';
 			end if;
