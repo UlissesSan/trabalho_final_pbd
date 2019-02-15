@@ -40,7 +40,7 @@ $$
  * - deve ser unico
  * - cargo nao pode ser numerico
  * */ 
-CREATE OR REPLACE FUNCTION cadastrarCargo(cargoNome VARCHAR(50)) RETURNS VOID as $$
+CREATE OR REPLACE FUNCTION cadastrarCargo(cargoNome VARCHAR(20)) RETURNS VOID as $$
 declare 
 	cargoID integer;
 begin
