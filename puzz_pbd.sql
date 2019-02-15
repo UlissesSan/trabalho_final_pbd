@@ -115,4 +115,7 @@ select cadastrarFuncionario('ulisses','11111111111','22222222222','endereco la d
 select cadastrarFuncionario('jao','22222222222','11111111111','endereco la de casa');
 select cadastrarFuncionario('zezin','33333333333','33333333333','endereco la de casa');
 
-select cadastrarCargo('nome');
+select cadastrarCargo('Atendente');
+select cadastrarCargo('Camareira');
+select cadastrarCargo('Seguranca');
+

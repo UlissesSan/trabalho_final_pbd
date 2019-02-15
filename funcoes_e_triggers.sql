@@ -46,12 +46,12 @@ declare
 begin
 	cargoID := pegaIdPorNome('cargo', cargoNome);
 
-  IF cargo IS NULL OR cargo LIKE '' THEN
+  IF cargoNome IS NULL OR cargoNome LIKE '' THEN
     RAISE EXCEPTION 'Cargo não pode ser nulo ou vazio!';
   elseif cargoID is not null then
   	raise exception 'Já existe um cargo cadastrodo com esse nome';
   ELSE
-    INSERT INTO cargo VALUES (DEFAULT, cargo);
+    INSERT INTO cargo VALUES (DEFAULT, cargoNome);
     RAISE notice 'Funcionario cadastrado com sucesso, Obrigado!';
   END IF;
 END
@@ -67,14 +67,14 @@ declare
 begin
 	categoriaID := pegaIdPorNome('categoria', categoriaNome);
 
-  IF categoria IS NULL OR categoria LIKE '' THEN
+  IF categoriaNome IS NULL OR categoriaNome LIKE '' THEN
     RAISE EXCEPTION 'Categoria não pode ser nula ou vazio!';
   elseif categoriaID is not null then
   	raise exception 'Já existe categoria cadastrada com esse nome';
   elseif valor <= 0 or valor is null then
   	raise exception 'Valor incorreto para o valor da categoria';
   ELSE
-    INSERT INTO categoria VALUES (DEFAULT, categoria, valor);
+    INSERT INTO categoria VALUES (DEFAULT, categoriaNome, valor);
     RAISE notice 'Categoria cadastrada com sucesso, Obrigado!';
   END IF;
 END
@@ -414,7 +414,7 @@ begin
 			select funcionario_id into retorno from funcionarios where nome ilike nome_pesquisado;
 			return retorno;
 		when tabela = 'cargo' then
-			select cargo_id into retorno from cargo where nome_nome ilike nome_pesquisado;
+			select cargo_id into retorno from cargo where nome_cargo ilike nome_pesquisado;
 			return retorno;
 		when tabela = 'categoria' then
 			select categoria_id into retorno from categoria where nome_categoria ilike nome_pesquisado;
