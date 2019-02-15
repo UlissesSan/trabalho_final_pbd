@@ -82,6 +82,7 @@ CREATE TABLE ocupacao(
   ocupacao_id SERIAL primary key not null,
   entrada timestamp not null,
   saida timestamp,
+  conta_valor float,
 
   funcionario_id integer not null,
   motel_id integer not null,
@@ -111,7 +112,6 @@ CREATE TABLE item_pedido(
 
   primary key(pedido_id, produto_id)
 );
-
 
 /* VIEWS */
 /* 1 - mostrar o balanço geral de uma data a outra */

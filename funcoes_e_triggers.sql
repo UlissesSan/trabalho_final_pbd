@@ -249,6 +249,8 @@ begin
 	if quarto_ocupado = true then
 		raise exception 'Quarto já esta livre!';
 	else
+		/* colocando a hora da saida*/
+		update ocupacao set saida = now() where motel_id = motelID and quartoID = quartoID;
 		update quarto_motel set ocupado = true where motel_id = motelID and quarto_id = quartoID;
 		raise notice 'Quarto liberado com sucesso!'
 	end if;
@@ -407,3 +409,40 @@ begin
 			raise exception 'Tabela nao existe';
 	end case;
 end;
+$$ language PLPGSQL;
+
+/* soma das horas no quarto + consumo = seria dt_entrada - dt_saida + valor */
+create or replace function conta_cliente(clienteID integer) returns void as $$
+declare
+	clienteID integer;
+	motelID integer;
+	quartoID varchar(50);
+	categoriaID integer;
+
+	entrada timestamp;
+	saida timestamp;
+	tempo_utilizado float;
+	categoria_valor float;
+
+	total_pedido float;
+	
+	total_conta float;
+	
+begin
+	select quarto_id from ocupacao where cliente_id = clienteID into quartoID;
+	
+	select categoria from quarto where quarto_id = quartoID into categoriaID;
+	select valor_categoria from categoria where categoria_id = categoriaID into categoria_valor;
+
+	select entrada from ocupacao where cliente_id = clienteID into entrada;
+	select saida from ocupacao where cliente_id = clienteID into saida;
+	select datediff(hour, entrada, saida) into tempo_utilizado;
+	
+	select ocupacao_id from ocupacao where cliente_id = clienteID into ocupacaoID;	
+	select total from pedido where ocupacao_id = ocupacaoID into total_pedido;
+
+	total_conta = total_pedido + (tempo_utilizado * categoria_valor);
+
+	update ocupacao set conta_valor = total_conta where cliente_id = clienteID;
+end;
+$$ language PLPGSQL;
