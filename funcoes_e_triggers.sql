@@ -100,7 +100,7 @@ begin
   ELSEIF descricao_p IS NULL OR descricao_p LIKE '' THEN
     RAISE EXCEPTION 'Descricao não pode ser nula ou vazia!';
   ELSE
-    INSERT INTO produtos VALUES (DEFAULT, nome_p, tipo_quantidade_p, descricao_p);
+    INSERT INTO produtos VALUES (default,nome_p, tipo_quantidade_p, descricao_p);
     RAISE notice 'Produto cadstrado com sucesso, Obrigado!';
     END IF;
 END

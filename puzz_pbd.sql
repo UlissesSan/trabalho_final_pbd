@@ -38,7 +38,8 @@ DROP TABLE IF EXISTS produtos;
 CREATE TABLE produtos(
   produto_id SERIAL primary key not null,
   nome_produto varchar(50) not null,
-  tipo_quantidade varchar(3) not null
+  tipo_quantidade varchar(3) not null,
+  descricao_produto varchar(50) not null
 );
 
 DROP TABLE IF EXISTS estoque;
@@ -118,4 +119,15 @@ select cadastrarFuncionario('zezin','33333333333','33333333333','endereco la de 
 select cadastrarCargo('Atendente');
 select cadastrarCargo('Camareira');
 select cadastrarCargo('Seguranca');
+
+select cadastrarCategoria('luxo',100);
+select cadastrarCategoria('conforto',50);
+select cadastrarCategoria('simples',20);
+
+select cadastrarProduto('refri','lt', 'Fanta uva de 350ml');
+select cadastrarProduto('preservativo','pct', 'jontex 3 unidades');
+
+select cadastrarMotel('Afrodite');
+select cadastrarMotel('garden');
+
 
