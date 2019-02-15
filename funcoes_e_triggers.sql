@@ -446,3 +446,9 @@ begin
 	update ocupacao set conta_valor = total_conta where cliente_id = clienteID;
 end;
 $$ language PLPGSQL;
+
+
+/* VIEWS */
+/* 1 - mostrar o balanço geral de uma data a outra */
+
+/* 2 - mostrar o balanço da conta do cliente*/
