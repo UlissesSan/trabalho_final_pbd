@@ -127,7 +127,18 @@ select cadastrarCategoria('simples',20);
 select cadastrarProduto('refri','lt', 'Fanta uva de 350ml');
 select cadastrarProduto('preservativo','pct', 'jontex 3 unidades');
 
-select cadastrarMotel('Afrodite');
+select cadastrarMotel('afrodite');
 select cadastrarMotel('garden');
 
+select cadastrarQuarto(1, 'luxo');
+select cadastrarQuarto(2, 'conforto');
+select cadastrarQuarto(3, 'simples');
+
+select cadastrarQuartoMotel(1,'luxo', 'afrodite');
+select cadastrarQuartoMotel(1,'luxo', 'garden');
+select cadastrarQuartoMotel(2,'conforto', 'afrodite');
+
+select * from quarto_motel;
+
+select inserir('funcionarios', '''gabriela'', ''44444444444'', ''44444444444'', ''endereco da tia''');
 

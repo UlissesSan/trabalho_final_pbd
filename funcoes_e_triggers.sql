@@ -153,7 +153,6 @@ begin
 end;
 $$ language PLPGSQL;
 
-
 /* funcao criar_quarto_motel
  * numero do quarto
  * categoria
@@ -181,7 +180,7 @@ begin
 	elseif quartoID is null then
 		raise exception 'O numero do quarto e a categoria nao existem';
 	else
-		insert into quarto_motel values (quartoID, motelID);
+		insert into quarto_motel values (false, quartoID, motelID);
 		raise notice 'Quarto cadastrado no motel';
 	end if;
 end
@@ -475,8 +474,53 @@ begin
 end;
 $$ language PLPGSQL;
 
+-- funções genericas --
 
-/* VIEWS */
-/* 1 - mostrar o balanço geral de uma data a outra */
+-- INSERT -- 
+CREATE OR REPLACE FUNCTION INSERIR(TABELA TEXT, VALOR TEXT)
+  RETURNS VOID AS
+$$
+DECLARE
+  COMANDO TEXT;
+BEGIN
+  COMANDO := 'INSERT INTO ' || $1 || ' VALUES(DEFAULT,' || $2 ||');';
+  raise notice 'Inserção realizada!';
+  EXECUTE COMANDO;
 
-/* 2 - mostrar o balanço da conta do cliente*/
+END;
+$$ LANGUAGE plpgsql;
+
+-- UPDATE --
+create or replace function atualizar(tabela text, campo text, valornovo text, condicao text, valor_condicao text)
+  returns void as
+$$
+declare
+  comando TEXT;
+begin
+
+    IF (NOT EXISTS(SELECT * FROM FUNCIONARIO WHERE campo ILIKE valor_condicao) OR valor_condicao IS NULL) THEN
+    RAISE 'Funcionario % nao existente!', valor_condicao;
+    END IF;
+
+  comando := 'UPDATE ' || tabela || ' SET ' || $2 || ' = ' || $3 || 'where ' || $4 || ' = ' || valor_condicao;
+  execute comando;
+
+
+end;
+$$ language plpgsql;
+
+-- DELETE --
+create or replace function deletar(tabela text, campo text, valor text) returns void as
+$$
+declare
+  comando text := 'delete from ' || $1 || ' where ' || $2 || '=''' || $3 || '''';
+
+begin
+
+    IF (NOT EXISTS(SELECT * FROM FUNCIONARIO WHERE campo ILIKE valor) OR valor IS NULL) THEN
+    RAISE 'Funcionario % nao existente!', valor;
+
+  execute comando;
+
+end;
+$$ language plpgsql;
