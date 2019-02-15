@@ -98,9 +98,7 @@ DROP TABLE IF EXISTS pedido;
 CREATE TABLE pedido(
   pedido_id SERIAL primary key not null,
   total float,
-  /* ocupacao_id nao estava declarado*/
-  ocupacao_id integer,
-  foreign key (ocupacao_id) references ocupacao(ocupacao_id)
+  ocupacao_id integer references ocupacao(ocupacao_id)
 );
 
 DROP TABLE IF EXISTS item_pedido;
@@ -119,24 +117,24 @@ CREATE TABLE item_pedido(
 /* 2 - mostrar o balanço da conta do cliente*/
 
 /* TESTS */
-select cadastrarQuarto(100, 'luxo');
-select cadastrarQuarto(100, 'master luxo');
-select * from quarto;
+-- select cadastrarQuarto(100, 'luxo');
+-- select cadastrarQuarto(100, 'master luxo');
+-- select * from quarto;
 
-select cadastrarCategoria('Luxo');
-select cadastrarCategoria('Apartamento');
-select cadastrarCategoria('');
-select * from categoria;
-select cadastrarCategoria('Luxo');
-select cadastrarCategoria('Apartamento');
+-- select cadastrarCategoria('Luxo');
+-- select cadastrarCategoria('Apartamento');
+-- select cadastrarCategoria('');
+-- select * from categoria;
+-- select cadastrarCategoria('Luxo');
+-- select cadastrarCategoria('Apartamento');
 
-select * from categoria;
+-- select * from categoria;
 
-select * from funcionarios;
+-- select * from funcionarios;
 
-INSERT INTO funcionarios (nome, cpf, telefone, endereco) VALUES ('PEGA ARROMBADO', '55555555555', '11111111111', 'puta que pariu');
-insert into funcionarios (nome, cpf, telefone, endereco) values ('Maycon','60000000000', '8612345678', 'Ladeira do Uruguai');
+-- INSERT INTO funcionarios (nome, cpf, telefone, endereco) VALUES ('PEGA ARROMBADO', '55555555555', '11111111111', 'puta que pariu');
+-- insert into funcionarios (nome, cpf, telefone, endereco) values ('Maycon','60000000000', '8612345678', 'Ladeira do Uruguai');
 
-insert into ocupacao (data_entrada, funcionarioId, cargoId) values ( '2018-10-20', 2, 1);
+-- insert into ocupacao (data_entrada, funcionarioId, cargoId) values ( '2018-10-20', 2, 1);
 
-select cadastrarFuncionario('Ulissdses', '60045262360', '12345678912', 'longe pra caralho');
+-- select cadastrarFuncionario('Ulissdses', '60045262360', '12345678912', 'longe pra caralho');

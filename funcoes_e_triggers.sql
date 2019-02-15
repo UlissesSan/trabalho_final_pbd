@@ -12,7 +12,7 @@ CREATE OR REPLACE FUNCTION cadastrarFuncionario(nome_f VARCHAR(50), cpf_f VARCHA
 declare
 	funcionarioID integer;
 begin
-	functionID := pegaIdPorNome('funcionarios', nome_f);
+	funcionarioID := pegaIdPorNome('funcionarios', nome_f);
 
   IF nome_f IS NULL OR nome_f LIKE ''
   THEN
@@ -31,7 +31,7 @@ begin
     INSERT INTO funcionarios VALUES (default, nome_f, cpf_f, telefone_f, endereco_f);
     RAISE notice 'Funcionario cadastrado com sucesso, Obrigado!';
   END IF;
-END
+END;
 $$
   LANGUAGE PLPGSQL;
 
@@ -104,7 +104,7 @@ begin
     RAISE notice 'Produto cadstrado com sucesso, Obrigado!';
     END IF;
 END
-$$ LANGUAGE PLPGSQL
+$$ LANGUAGE PLPGSQL;
 
 /* 
  * numero -  nao pode vazio nem nulo, nem negativo, so numero
@@ -147,10 +147,10 @@ begin
 		insert into motel values (default, nome);
 		raise notice 'Motel inserido com sucesso';
 	else
-		raise exception 'Já existe motel cadastrado com esse nome.'
+		raise exception 'Já existe motel cadastrado com esse nome.';
 	end if;
 
-end
+end;
 $$ language PLPGSQL;
 
 
@@ -383,7 +383,7 @@ EXECUTE PROCEDURE checarNumeroQuartoECategoria();
 
 
 /* FUNCOES AUXILIARES */
-create or replace function pegaIdPorNome(tabela varchar(50), nome_pesquisado varchar(50), valor_pesquisado integer default 0) return integer as $$
+create or replace function pegaIdPorNome(tabela varchar(50), nome_pesquisado varchar(50), valor_pesquisado integer default 0) returns integer as $$
 declare
 	categoriaID integer;
 begin
